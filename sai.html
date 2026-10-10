@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Personal Health Copilot</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fc;color:#172b4d}
+header{background:#102b50;color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h2{margin:0;color:#64e0e7}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;padding:11px 16px;border-radius:8px;background:#2563eb;color:white;font-weight:bold;cursor:pointer}
+button:hover{opacity:.85}
+nav button{background:#244467}
+nav button.active{background:#168cce}
+main{max-width:1100px;margin:auto;padding:30px 20px}
+.page{display:none}
+.page.active{display:block}
+h1{font-size:30px;margin-bottom:8px}
+.muted{color:#64748b;line-height:1.6}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
+.card{background:white;padding:22px;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 4px 15px #152c4d0b}
+.card h3{margin-top:0}
+.number{font-size:27px;font-weight:bold;color:#1674d1}
+.hero{background:linear-gradient(120deg,#123f85,#198acb);color:white;padding:30px;border-radius:16px}
+.hero p{line-height:1.7;color:#e2efff}
+.upload{border:2px dashed #78a6e8;text-align:center;padding:30px;border-radius:13px;background:#f8fbff;margin:20px 0}
+input[type=file]{max-width:100%;margin:15px}
+.status{padding:14px;background:#eaf2ff;border-radius:9px;margin:15px 0;overflow-wrap:anywhere}
+.result{padding:15px;background:#f8fafc;border-radius:10px;margin:12px 0;border-left:4px solid #2583df}
+.good{border-color:#16a34a}
+.warning{background:#fff7e6;border-left:4px solid #e9a020;padding:15px;border-radius:9px;line-height:1.6}
+.progress{height:10px;background:#dce7f5;border-radius:10px;overflow:hidden;margin:20px 0}
+.bar{height:100%;width:0;background:#168bdf;transition:width .3s}
+.hidden{display:none!important}
+footer{text-align:center;padding:25px;color:#64748b;font-size:13px}
+@media(max-width:600px){header{padding:16px}main{padding:22px 14px}.hero{padding:22px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<header>
+  <h2>✚ Health Copilot AI</h2>
+  <nav>
+    <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button onclick="showPage('upload',this)">Upload Report</button>
+    <button onclick="showPage('results',this)">AI Results</button>
+    <button onclick="showPage('guidance',this)">Guidance</button>
+    <button onclick="showPage('showcase',this)">Showcase</button>
+  </nav>
+</header>
+
+<main>
+<section id="dashboard" class="page active">
+  <div class="hero">
+    <h1>Welcome to Your Health Copilot 👋</h1>
+    <p>Your personal healthcare project demo. Upload a report, explore the analysis workflow, and view general health guidance.</p>
+    <button onclick="showPage('upload')">＋ Upload Medical Report</button>
+  </div>
+  <div class="cards">
+    <div class="card"><h3>📄 Reports Uploaded</h3><div class="number" id="count">0</div><p class="muted">Reports selected this session</p></div>
+    <div class="card"><h3>🤖 AI Analysis</h3><div class="number" id="scanStatus">Ready</div><p class="muted">Demo analysis workflow</p></div>
+    <div class="card"><h3>🛡️ Privacy</h3><div class="number">Local demo</div><p class="muted">No report is sent to a server by this page</p></div>
+  </div>
+  <div class="card">
+    <h3>How it works</h3>
+    <p>1. Upload a medical report.</p>
+    <p>2. Start the simulated AI scanning process.</p>
+    <p>3. View the demo result screen.</p>
+    <p>4. Read general guidance and the final project showcase.</p>
+  </div>
+</section>
+
+<section id="upload" class="page">
+  <h1>Upload Medical Report</h1>
+  <p class="muted">Choose a PDF, JPG, PNG, or text report to demonstrate the workflow.</p>
+  <div class="card">
+    <div class="upload">
+      <div style="font-size:42px">📑</div>
+      <h3>Select your report</h3>
+      <input id="fileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.txt,.csv">
+      <div id="fileName" class="muted">No file selected</div>
+    </div>
+    <div class="warning">Demo only: selecting a file does not mean its medical contents have been read or understood.</div>
+    <br>
+    <button onclick="startScan()">Start AI Scan →</button>
+    <div id="scanBox" class="status hidden">
+      <strong id="scanText">Preparing scan...</strong>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <p id="scanPercent">0%</p>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="page">
+  <h1>Report Analysis Results</h1>
+  <p class="muted">Example results for the project demonstration.</p>
+  <div class="card">
+    <h3>📋 Report summary</h3>
+    <p id="reportSummary">No report selected yet. Upload a report to start the demo.</p>
+    <div class="result"><strong>Blood glucose</strong><p>This demo does not extract a real value from your report.</p></div>
+    <div class="result"><strong>Haemoglobin</strong><p>This demo does not extract a real value from your report.</p></div>
+    <div class="result"><strong>Other parameters</strong><p>Actual values require real report extraction and verification.</p></div>
+    <div class="warning">No medical findings have been generated. Do not use this demo to make healthcare decisions.</div>
+  </div>
+</section>
+
+<section id="guidance" class="page">
+  <h1>Health Guidance</h1>
+  <p class="muted">General wellness information, not personalized medical advice.</p>
+  <div class="cards">
+    <div class="card"><h3>🥗 Balanced diet</h3><p>Eat a varied diet with vegetables, fruit, protein sources, and whole grains.</p></div>
+    <div class="card"><h3>💧 Hydration</h3><p>Drink water regularly, adjusting to your needs and any medical advice.</p></div>
+    <div class="card"><h3>🚶 Activity</h3><p>Choose physical activity that suits your ability and health.</p></div>
+    <div class="card"><h3>🩺 Medical review</h3><p>Ask a qualified healthcare professional to interpret abnormal or concerning report results.</p></div>
+  </div>
+  <div class="warning">If you have severe or sudden symptoms, seek urgent medical care rather than relying on this website.</div>
+</section>
+
+<section id="showcase" class="page">
+  <div class="hero">
+    <h1>🚀 Project Final Showcase</h1>
+    <p>AI-Powered Personal Health Copilot</p>
+    <p>Helping users organize health reports and understand health information through an accessible digital interface.</p>
+  </div>
+  <div class="cards">
+    <div class="card"><h3>01. Upload</h3><p>Choose a medical report.</p></div>
+    <div class="card"><h3>02. Analyze</h3><p>Demonstrate the scanning workflow.</p></div>
+    <div class="card"><h3>03. Understand</h3><p>Display a results interface.</p></div>
+    <div class="card"><h3>04. Guide</h3><p>Provide safe general information.</p></div>
+  </div>
+  <div class="card">
+    <h3>Technology</h3>
+    <p>Frontend: HTML, CSS, JavaScript.</p>
+    <p>Future integration: secure backend, PDF text extraction, a validated AI service, source verification, and appropriate privacy controls.</p>
+    <p><strong>Current status:</strong> Interactive frontend demonstration, not a real medical AI system.</p>
+    <button onclick="showPage('dashboard')">Return to Dashboard</button>
+  </div>
+</section>
+</main>
+<footer>AI Personal Health Copilot · Student Project Demo · Not a medical device</footer>
+
+<script>
+let reportCount = 0;
+let scanning = false;
+let scanTimer = null;
+
+function showPage(id, button) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  if (button) button.classList.add('active');
+}
+
+document.getElementById('fileInput').addEventListener('change', function() {
+  const file = this.files[0];
+  document.getElementById('fileName').textContent =
+    file ? 'Selected: ' + file.name : 'No file selected';
+});
+
+function startScan() {
+  const file = document.getElementById('fileInput').files[0];
+  if (!file) {
+    alert('Please select a report first.');
+    return;
+  }
+  if (scanning) return;
+
+  scanning = true;
+  clearInterval(scanTimer);
+  reportCount++;
+  document.getElementById('count').textContent = reportCount;
+  document.getElementById('scanStatus').textContent = 'Scanning';
+  document.getElementById('reportSummary').textContent =
+    'Selected file: ' + file.name +
+    '. The file was selected, but its contents have not been analyzed.';
+
+  const box = document.getElementById('scanBox');
+  const bar = document.getElementById('bar');
+  const text = document.getElementById('scanText');
+  const percent = document.getElementById('scanPercent');
+  box.classList.remove('hidden');
+  bar.style.width = '0%';
+
+  let progress = 0;
+  const steps = [
+    'Preparing report...',
+    'Simulating AI scan...',
+    'Checking demo workflow...',
+    'Preparing results screen...'
+  ];
+
+  scanTimer = setInterval(() => {
+    progress += 5;
+    bar.style.width = progress + '%';
+    percent.textContent = progress + '%';
+    text.textContent = steps[Math.min(3, Math.floor(progress / 30))];
+
+    if (progress >= 100) {
+      clearInterval(scanTimer);
+      scanning = false;
+      text.textContent = 'Demo scan complete!';
+      document.getElementById('scanStatus').textContent = 'Complete';
+      setTimeout(() => showPage('results'), 500);
+    }
+  }, 120);
+}
+</script>
+</body>
+</html>
